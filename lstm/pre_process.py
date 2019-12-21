@@ -5,8 +5,22 @@ import jieba
 import pandas as pd
 from pathlib import Path
 
-data_path = "THUCNews"
+data_path = "../../THUCNews/THUCNews"
 csv_path = data_path + ".csv"
+
+test_set_path = "test"
+
+
+def get_test_set(s: Path, d: Path):
+    files = os.listdir(s)
+    print(files)
+    for folder in files:
+        # os.mkdir(d/folder)
+        test_set = os.listdir(s / folder)
+        print(folder,len(test_set), len(test_set) * 0.2)
+
+
+    pass
 
 
 def read_file(p: Path) -> (list, list):
@@ -84,5 +98,6 @@ def load_data(filename):
 if __name__ == "__main__":
     f = "THUCNews"
     # d = token()
-    d = load_data(f)
-    print(d)
+    # d = load_data(f)
+    # print(d)
+    get_test_set(Path(data_path), Path(test_set_path))

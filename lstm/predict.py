@@ -8,13 +8,18 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-from .pre_process import load_data
 
+try:
+    from lstm.pre_process import load_data
+except ImportError:
+    from .pre_process import load_data
+
+max_len = 1000
 csv_data = "THUCNews"
 test_data = "sub-THUCNews"
 
-label, data, tokenize, length = load_data()
-input_data, input_label, _, _ = train_test_split(tokenize, label, test_size=0.9)
+# label, data, tokenize, length = load_data()
+# input_data, input_label, _, _ = train_test_split(tokenize, label, test_size=0.9)
 
 text = """
 北京时间12月18日，2019年东亚杯冠军产生，韩国队1-0击败日本队，以3战全胜的战绩历史上第5次获得东亚杯的冠军，成为首支东亚杯3连冠球队！虽然世界杯和亚洲杯的表现不如对手，但这一次韩国队找回场子，此外在去年亚运会以及今年世青赛，韩国国奥与韩国国青都曾击败日本队，3条战线都击败对手。
@@ -22,7 +27,6 @@ text = """
 
 
 def predict(text):
-    max_len = 1000
     stopwords = [i.strip() for i in open("stopwords.txt", encoding='u8').read()]
 
     token = " ".join([i for i in jieba.cut(text) if i not in stopwords])
@@ -51,16 +55,10 @@ def predict(text):
 
     pre = model.predict(test_seq_mat)
     for i, j in enumerate(l):
-        # print(i, j)
         confidence[j] = pre[0][i]
 
-    # print(pre)
-    # print(confidence)
-
     max_index = np.argmax(pre)
-    # print(max_index)
     max_type = l[max_index]
-    # print(f"{max_type}: {confidence[max_type]}")
     confidence = {k: v for k, v in sorted(confidence.items(), key=lambda item: item[1], reverse=True)}
     return max_type, confidence
 

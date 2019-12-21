@@ -17,12 +17,19 @@ from keras.callbacks import LambdaCallback
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
-from lstm.pre_process import load_data
+try:
+    from lstm.pre_process import load_data
+except ImportError:
+    from .pre_process import load_data
+
+max_word = 3000  # 词语的最多数量
+max_len = 1000
+datafile = "THUCNews"
+testfile = "sub-THUCNews"
 
 print(f"init at: {time.ctime()}")
 # def read_flag():
-datafile = "THUCNews"
-testfile = "sub-THUCNews"
+
 
 labels, data, tokenize, length = load_data(datafile)
 label_test, _, input_test, _ = load_data(testfile)
@@ -54,8 +61,6 @@ le_label_test = ohe.fit_transform(le_label_test).toarray()
 # input_valid = ohe.transform(le_label_valid).toarray()  # ?
 
 # 使用tokenizer 建立词组和向量的词典 因为程序只能处理数字
-max_word = 3000  # 词语的最多数量
-max_len = 1000
 tok = Tokenizer(num_words=max_word)
 tok.fit_on_texts(input_train)
 
