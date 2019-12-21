@@ -12,11 +12,21 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 try:
     from lstm.pre_process import load_data
 except ImportError:
-    from .pre_process import load_data
+    from pre_process import load_data
 
-max_len = 1000
-csv_data = "THUCNews"
-test_data = "sub-THUCNews"
+from pathlib import Path
+
+import os
+
+max_len = 300
+base = os.path.dirname(Path(__file__).absolute())
+
+csv_data = base + "/THUCNews"
+test_data = base + "/sub-THUCNews"
+stop_words_path = base + "/stopwords.txt"
+model_path = base + "/model/lstm.h5"
+token_path = base + "/model/token.pickle"
+# stop_words_path =
 
 # label, data, tokenize, length = load_data()
 # input_data, input_label, _, _ = train_test_split(tokenize, label, test_size=0.9)
@@ -27,13 +37,13 @@ text = """
 
 
 def predict(text):
-    stopwords = [i.strip() for i in open("stopwords.txt", encoding='u8').read()]
+    stopwords = [i.strip() for i in open(stop_words_path, encoding='u8').read()]
 
     token = " ".join([i for i in jieba.cut(text) if i not in stopwords])
     print(token)
 
-    model = load_model('model/lstm.h5')
-    tok = pickle.load(open('model/token.pickle', 'rb'))
+    model = load_model(model_path)
+    tok = pickle.load(open(token_path, 'rb'))
 
     test_seq = tok.texts_to_sequences([token])
     test_seq_mat = sequence.pad_sequences(test_seq, maxlen=max_len)
@@ -60,9 +70,10 @@ def predict(text):
     max_index = np.argmax(pre)
     max_type = l[max_index]
     confidence = {k: v for k, v in sorted(confidence.items(), key=lambda item: item[1], reverse=True)}
-    return max_type, confidence
+    return max_type
 
 
 if __name__ == "__main__":
+    # pass
     t = predict(text)
     print(t)
